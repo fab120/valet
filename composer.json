@@ -1,9 +1,12 @@
 {
-    "name": "laravel/valet",
-    "description": "A more enjoyable local development experience for Mac.",
-    "keywords": ["laravel", "zonda", "wwdhhd"],
+    "name": "fab120/valet",
+    "description": "A more enjoyable local development experience for Mac without dnsmasq.",
     "license": "MIT",
     "authors": [
+        {
+            "name": "Fabio Cagliero",
+            "email": "caglierofabio@gmail.com"
+        },
         {
             "name": "Taylor Otwell",
             "email": "taylor@laravel.com"
@@ -34,6 +37,9 @@
     "require-dev": {
         "mockery/mockery": "^1.2.3",
         "yoast/phpunit-polyfills": "^0.2.0"
+    },
+    "replace": {
+        "laravel/valet": "self.version"
     },
     "bin": [
         "valet"
