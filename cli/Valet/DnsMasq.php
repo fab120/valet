@@ -15,10 +15,7 @@ class DnsMasq
      */
     function __construct(Brew $brew, CommandLine $cli, Filesystem $files, Configuration $configuration)
     {
-        $this->cli = $cli;
-        $this->brew = $brew;
-        $this->files = $files;
-        $this->configuration = $configuration;
+        //
     }
 
     /**
@@ -28,20 +25,7 @@ class DnsMasq
      */
     function install($tld = 'test')
     {
-        $this->brew->ensureInstalled('dnsmasq');
-
-        // For DnsMasq, we enable its feature of loading *.conf from /usr/local/etc/dnsmasq.d/
-        // and then we put a valet config file in there to point to the user's home .config/valet/dnsmasq.d
-        // This allows Valet to make changes to our own files without needing to modify the core dnsmasq configs
-        $this->ensureUsingDnsmasqDForConfigs();
-
-        $this->createDnsmasqTldConfigFile($tld);
-
-        $this->createTldResolver($tld);
-
-        $this->brew->restartService('dnsmasq');
-
-        info('Valet is configured to serve for TLD [.'.$tld.']');
+        //
     }
 
     /**
@@ -51,11 +35,7 @@ class DnsMasq
      */
     function uninstall()
     {
-        $this->brew->stopService('dnsmasq');
-        $this->brew->uninstallFormula('dnsmasq');
-        $this->cli->run('rm -rf '.BREW_PREFIX.'/etc/dnsmasq.d/dnsmasq-valet.conf');
-        $tld = $this->configuration->read()['tld'];
-        $this->files->unlink($this->resolverPath.'/'.$tld);
+        //
     }
 
     /**
@@ -65,7 +45,7 @@ class DnsMasq
      */
     function restart()
     {
-        $this->brew->restartService('dnsmasq');
+        //
     }
 
     /**
@@ -75,34 +55,7 @@ class DnsMasq
      */
     function ensureUsingDnsmasqDForConfigs()
     {
-        info('Updating Dnsmasq configuration...');
-
-        // set primary config to look for configs in /usr/local/etc/dnsmasq.d/*.conf
-        $contents = $this->files->get($this->dnsmasqMasterConfigFile);
-        // ensure the line we need to use is present, and uncomment it if needed
-        if (false === strpos($contents, 'conf-dir='.BREW_PREFIX.'/etc/dnsmasq.d/,*.conf')) {
-            $contents .= PHP_EOL . 'conf-dir='.BREW_PREFIX.'/etc/dnsmasq.d/,*.conf' . PHP_EOL;
-        }
-        $contents = str_replace('#conf-dir='.BREW_PREFIX.'/etc/dnsmasq.d/,*.conf', 'conf-dir='.BREW_PREFIX.'/etc/dnsmasq.d/,*.conf', $contents);
-
-        // remove entries used by older Valet versions:
-        $contents = preg_replace('/^conf-file.*valet.*$/m', '', $contents);
-
-        // save the updated config file
-        $this->files->put($this->dnsmasqMasterConfigFile, $contents);
-
-        // remove old ~/.config/valet/dnsmasq.conf file because things are moved to the ~/.config/valet/dnsmasq.d/ folder now
-        if (file_exists($file = dirname($this->dnsmasqUserConfigDir()) . '/dnsmasq.conf')) {
-            unlink($file);
-        }
-
-        // add a valet-specific config file to point to user's home directory valet config
-        $contents = $this->files->get(__DIR__.'/../stubs/etc-dnsmasq-valet.conf');
-        $contents = str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents);
-        $this->files->ensureDirExists($this->dnsmasqSystemConfDir, user());
-        $this->files->putAsUser($this->dnsmasqSystemConfDir . '/dnsmasq-valet.conf', $contents);
-
-        $this->files->ensureDirExists(VALET_HOME_PATH . '/dnsmasq.d', user());
+        //
     }
 
     /**
@@ -112,10 +65,7 @@ class DnsMasq
      */
     function createDnsmasqTldConfigFile($tld)
     {
-        $tldConfigFile = $this->dnsmasqUserConfigDir() . 'tld-' . $tld . '.conf';
-        $loopback = $this->configuration->read()['loopback'];
-
-        $this->files->putAsUser($tldConfigFile, 'address=/.'.$tld.'/'.$loopback.PHP_EOL.'listen-address='.$loopback.PHP_EOL);
+        //
     }
 
     /**
@@ -126,10 +76,7 @@ class DnsMasq
      */
     function createTldResolver($tld)
     {
-        $this->files->ensureDirExists($this->resolverPath);
-        $loopback = $this->configuration->read()['loopback'];
-
-        $this->files->put($this->resolverPath.'/'.$tld, 'nameserver '.$loopback.PHP_EOL);
+        //
     }
 
     /**
@@ -141,10 +88,7 @@ class DnsMasq
      */
     function updateTld($oldTld, $newTld)
     {
-        $this->files->unlink($this->resolverPath.'/'.$oldTld);
-        $this->files->unlink($this->dnsmasqUserConfigDir() . 'tld-' . $oldTld . '.conf');
-
-        $this->install($newTld);
+        //
     }
 
     /**
@@ -166,6 +110,6 @@ class DnsMasq
      */
     function dnsmasqUserConfigDir()
     {
-        return $_SERVER['HOME'].'/.config/valet/dnsmasq.d/';
+        //
     }
 }
